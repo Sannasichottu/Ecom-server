@@ -6,8 +6,6 @@ const connectDatabase = () => {
   .then(() => {
     console.log(`MongoDB is connected to the host : ${process.env.PORT}`)
   })
-  .catch((error) => console.log(error));
-
 }
 
 module.exports = connectDatabase
