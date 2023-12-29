@@ -76,7 +76,6 @@ exports.forgotPassword = catchAsyncError( async (req, res, next)=>{
             subject: "SanCode Password Recovery",
             message
         })
-        console.log(message)
            res.status(200).json({
             success:true,
             message:`Email sent to ${user.email}`
