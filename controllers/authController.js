@@ -5,6 +5,7 @@ const ErrorHandler = require('../utils/errorHandler')
 const sendToken = require('../utils/jwt')
 const crypto = require('crypto')
 
+//Register - /api/v1/register
 exports.registerUser =catchAsyncError(async(req,res,next)=>{
     const {name,email,password,avatar} = req.body;
     const user = await User.create({
@@ -17,7 +18,7 @@ exports.registerUser =catchAsyncError(async(req,res,next)=>{
     sendToken(user, 201, res)
 } )
 
-//Login
+//Login - /api/v1/login
 exports.loginUser = catchAsyncError(async(req,res,next)=>{
     const {email,password} = req.body;
     if(!email || !password) {
@@ -37,7 +38,7 @@ exports.loginUser = catchAsyncError(async(req,res,next)=>{
 
 })
 
-//logout
+//logout - /api/v1/logout
 exports.logoutUser = (req,res,next) => {
     res.cookie('token',null,{
         expires : new Date(Date.now()),
@@ -61,11 +62,8 @@ exports.forgotPassword = catchAsyncError( async (req, res, next)=>{
     const resetToken = user.getResetToken();
     await user.save({validateBeforeSave:false})
    
-//Create reset url
-        // const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/password/reset/${resetToken}`;
-
+    //Create reset url
         const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/password/reset/${resetToken}`
-        //localhost:5000
         const message = `Your password reset url is as follows \n\n ${resetUrl} \n\n If you have not requested this email, then ignore it.`;
 
 
@@ -89,6 +87,7 @@ exports.forgotPassword = catchAsyncError( async (req, res, next)=>{
     
     })  
 
+//Reset Password - /api/v1/password/reset/:token
 exports.resetPassword = catchAsyncError(async(req,res,next) => {
     const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex')
 
@@ -113,4 +112,14 @@ exports.resetPassword = catchAsyncError(async(req,res,next) => {
     await user.save({validateBeforeSave:false})
 
     sendToken(user, 201, res)
+})
+
+
+//Get user Profile 
+exports.getUserProfile = catchAsyncError(async(req,res,next) => {
+    const user = await User.findById(req.user.id)
+    res.status(200).json({
+        success:true,
+        user
+    })
 })
